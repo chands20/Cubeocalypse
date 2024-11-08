@@ -3,7 +3,12 @@ guid: e424086fe6546594e88a317339ff39fd
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_VoxelApocalypse
+    second: {fileID: 2100000, guid: ed7b406b7d85e20469a7b0df58920d8e, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
