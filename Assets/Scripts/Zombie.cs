@@ -9,6 +9,7 @@ public class Zombie : MonoBehaviour
     public Renderer zombieRenderer; // Reference to the Renderer component (assign in inspector)
     public Color damageColor = Color.red; // Color to flash when damaged
     private Color originalColor; // Store original color
+    public GameObject coinPrefab;
 
     private Transform target;
     private NavMeshAgent agent;
@@ -120,6 +121,11 @@ public class Zombie : MonoBehaviour
 
         OnZombieDeath?.Invoke();
 
+        // Drop Coins
+        if (coinPrefab != null)
+        {
+            Instantiate(coinPrefab, transform.position, Quaternion.identity);
+        }
 
         // Start a coroutine to wait for the animation to complete before destroying
         StartCoroutine(DestroyAfterDeath());

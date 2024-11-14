@@ -8,7 +8,7 @@ public class Spawner : MonoBehaviour
     [SerializeField] int spawnDepth;
     public GameObject zombiePrefab;         // Zombie prefab to spawn
     public Vector2 spawnAreaSize;
-    public float spawnInterval = 5f;        // Time in seconds between each spawn
+    public float spawnInterval = 8f;        // Time in seconds between each spawn
 
 
     private int zombiesSpawned = 0;
@@ -17,8 +17,7 @@ public class Spawner : MonoBehaviour
     void Start()
     {
      spawnAreaSize = new Vector2(spawnWidth, spawnDepth); // Width and Depth of spawn area
-    // Start spawning zombies at intervals
-    InvokeRepeating(nameof(SpawnZombie), 0f, spawnInterval);
+    
     }
 
     void SpawnZombie()

@@ -11,11 +11,16 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI waveText;
     [SerializeField] TextMeshProUGUI ammoText;
     [SerializeField] TextMeshProUGUI zombiesRemaining;
+    [SerializeField] TextMeshProUGUI playerCoinText;
     int waveNumber = 0;
 
     public int zombiesToSpawn = 10;
+    public bool inBetweenWave = true;
 
     public Spawner spawner;
+
+    //Coins
+    public int playerCoins = 0;
 
 
     private void Awake()
@@ -29,6 +34,20 @@ public class GameManager : MonoBehaviour
         StartNextWave(); // Start the first wave at the beginning
     }
 
+    // Update is called once per frame
+    void Update()
+    {
+        if (inBetweenWave)
+        {
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                StartNextWave();
+                //make button invisible
+                //make shop disappear
+            }
+        }
+    }
+
     public void StartNextWave()
     {
         waveNumber++;
@@ -39,8 +58,7 @@ public class GameManager : MonoBehaviour
 
     public void OnWaveComplete()
     {
-        // Wait a few seconds before starting the next wave (optional delay can be added here)
-        Invoke(nameof(StartNextWave), 5f);
+        inBetweenWave = true;
     }
 
     public void UpdateZombiesRemaining(int zombiesLeft)
@@ -48,11 +66,6 @@ public class GameManager : MonoBehaviour
         zombiesRemaining.text = "Zombies Remaining: " + zombiesLeft;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void UpdateAmmoText(int current, int total, bool reloading)
     {
@@ -65,6 +78,17 @@ public class GameManager : MonoBehaviour
             ammoText.text = current + "/" + total;
         }
         
+    }
+
+    void UpdateCoinText()
+    {
+        playerCoinText.text = "Coins: " + playerCoins;
+    }
+
+    public void PickedUpCoin(int amount)
+    {
+        playerCoins += amount;
+        UpdateCoinText();
     }
 
 }

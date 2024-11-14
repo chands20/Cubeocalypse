@@ -167,6 +167,7 @@ MonoBehaviour:
   health: 20
   zombieRenderer: {fileID: 0}
   damageColor: {r: 1, g: 0, b: 0, a: 1}
+  coinPrefab: {fileID: 1950871307682000, guid: 01348926c7cbb3347a006c37204131c3, type: 3}
 --- !u!195 &5149347892607049684
 NavMeshAgent:
   m_ObjectHideFlags: 0
