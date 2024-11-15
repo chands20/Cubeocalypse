@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     public float rotationSpeed = 10f; // Rotation speed of player
     private Camera mainCamera;   // Reference to the main camera
     private Animator animator;
+    private Rigidbody rb;
 
     // Gun/Shooting 
     public Transform shootingPoint; // Position from which the raycast originates
@@ -15,8 +16,8 @@ public class Player : MonoBehaviour
     public float shootingRange = 100f; // Range of the gun
     public int damage = 10; // Damage dealt to zombies
     private float nextFireTime = 0f;
-    private int totalAmmo = 50;
-    private int currentAmmo = 10;
+    public int totalAmmo = 50;
+    public int currentAmmo = 10;
     private bool isReloading = false;
     [SerializeField] AudioSource gunshotAudio; // gunshot
 
@@ -30,6 +31,7 @@ public class Player : MonoBehaviour
     {
         mainCamera = Camera.main;  // Get the main camera reference
         animator = gameObject.GetComponent<Animator>();
+        rb = gameObject.GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -42,7 +44,7 @@ public class Player : MonoBehaviour
         AimTracer();
         
         // Shooting
-        if (Input.GetMouseButton(0) && Time.time > nextFireTime && !isReloading) // Left mouse button
+        if (Input.GetMouseButton(0) && Time.time > nextFireTime && !isReloading && GameManager.instance.inBetweenWave == false) // Left mouse button
         {
             nextFireTime = Time.time + fireRate;
             Shoot();
@@ -80,6 +82,8 @@ public class Player : MonoBehaviour
 
         // Move the player
         transform.position += moveDirection * moveSpeed * Time.deltaTime;
+        rb.MovePosition(transform.position);
+        
 
         // if movement walking animation
         if (moveDirection.magnitude > 0)
@@ -173,6 +177,15 @@ public class Player : MonoBehaviour
         isReloading = false;
         Debug.Log("Reload complete");
         GameManager.instance.UpdateAmmoText(currentAmmo, totalAmmo, isReloading);
+    }
+
+
+    //SHOP ADDING
+
+    public void AddAmmo()
+    {
+        totalAmmo += 10;
+        GameManager.instance.UpdateAmmoText(currentAmmo,totalAmmo, isReloading);
     }
 
 }

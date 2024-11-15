@@ -7,7 +7,7 @@ public class Coins : MonoBehaviour
 
     [SerializeField] int value = 1;
     // Start is called before the first frame update
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter(Collider collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
@@ -15,4 +15,5 @@ public class Coins : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
+
 }
