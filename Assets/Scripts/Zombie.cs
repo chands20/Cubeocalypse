@@ -4,10 +4,10 @@ using UnityEngine.AI;
 
 public class Zombie : MonoBehaviour
 {
-    [SerializeField] float moveSpeed = 3f;
+    [SerializeField] float moveSpeed;
     public int health = 20;
     public Renderer zombieRenderer; // Reference to the Renderer component (assign in inspector)
-    public Color damageColor = Color.red; // Color to flash when damaged
+    private Color damageColor = Color.red; // Color to flash when damaged
     private Color originalColor; // Store original color
     public GameObject coinPrefab;
 
@@ -43,7 +43,7 @@ public class Zombie : MonoBehaviour
 
         // Set up the NavMeshAgent
         agent = GetComponent<NavMeshAgent>();
-        agent.speed = moveSpeed;
+        agent.speed = moveSpeed + (float)(GameManager.instance.waveNumber * 0.05);
         agent.updateRotation = false; // Disable NavMeshAgent's auto-rotation
     }
 
@@ -118,6 +118,13 @@ public class Zombie : MonoBehaviour
 
         // Trigger the death animation
         animator.SetBool("isDead", true);
+
+        // Disable collider
+        BoxCollider collider = GetComponent<BoxCollider>();
+        if(collider != null)
+        {
+            collider.enabled = false;
+        }
 
         OnZombieDeath?.Invoke();
 

@@ -5,10 +5,16 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 3f; // Movement speed of the player
+    public int playerHealth;
     public float rotationSpeed = 10f; // Rotation speed of player
     private Camera mainCamera;   // Reference to the main camera
     private Animator animator;
     private Rigidbody rb;
+
+    // Damage
+    public Renderer playerRenderer;
+    private Color damageColor = Color.red; 
+    private Color originalColor;
 
     // Gun/Shooting 
     public Transform shootingPoint; // Position from which the raycast originates
@@ -24,7 +30,11 @@ public class Player : MonoBehaviour
     public LineRenderer aimLineRenderer;
     public GameObject bulletTrailPrefab;
 
-    
+    // Damage Helpers
+    private float lastDamageTime = 0f; // Time when the player last took damage
+    public float damageCooldown = 2f; // Time between damage ticks
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -32,6 +42,18 @@ public class Player : MonoBehaviour
         mainCamera = Camera.main;  // Get the main camera reference
         animator = gameObject.GetComponent<Animator>();
         rb = gameObject.GetComponent<Rigidbody>();
+        playerHealth = 3;
+        GameManager.instance.UpdatePlayerHealth(playerHealth);
+
+        // Damage 
+        if (playerRenderer == null)
+        {
+            playerRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+        }
+        if (playerRenderer != null)
+        {
+            originalColor = playerRenderer.material.color;
+        }
     }
 
     // Update is called once per frame
@@ -186,6 +208,50 @@ public class Player : MonoBehaviour
     {
         totalAmmo += 10;
         GameManager.instance.UpdateAmmoText(currentAmmo,totalAmmo, isReloading);
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Zombie"))
+        {
+            // Check if enough time has passed since the last damage
+            if (Time.time >= lastDamageTime + damageCooldown)
+            {
+                TakeDamage(1);
+                lastDamageTime = Time.time; // Update last damage time
+            }
+        }
+    }
+
+    private void TakeDamage(int damageAmount)
+    {
+        playerHealth -= damageAmount;
+        GameManager.instance.UpdatePlayerHealth(playerHealth);
+        StartCoroutine(FlashRed());
+
+        if (playerHealth <= 0)
+        {
+            Debug.Log("Player has died");
+            GameManager.instance.GameOver();
+        }
+    }
+
+    IEnumerator FlashRed()
+    {
+        // Change to damage color
+        if (playerRenderer != null)
+        {
+            playerRenderer.material.color = damageColor;
+        }
+
+        // Wait for a split second
+        yield return new WaitForSeconds(.1f);
+
+        // Revert to the original color
+        if (playerRenderer != null)
+        {
+            playerRenderer.material.color = originalColor;
+        }
     }
 
 }

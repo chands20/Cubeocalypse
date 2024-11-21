@@ -10,18 +10,21 @@ public class GameManager : MonoBehaviour
 
     public static GameManager instance;
 
+    // UI
     [SerializeField] TextMeshProUGUI waveText;
     [SerializeField] TextMeshProUGUI ammoText;
     [SerializeField] TextMeshProUGUI zombiesRemaining;
     [SerializeField] TextMeshProUGUI playerCoinText;
     [SerializeField] TextMeshProUGUI nextWaveText;
+    [SerializeField] TextMeshProUGUI playerHealthText;
+    [SerializeField] TextMeshProUGUI gameOverText;
 
     //SHOP
 
     [SerializeField] GameObject shopView;
     [SerializeField] UnityEngine.UI.Button buyAmmoButton;
     [SerializeField] UnityEngine.UI.Button buyHealthButton;
-    int waveNumber = 0;
+    public int waveNumber = 0;
 
     public int zombiesToSpawn = 10;
     public bool inBetweenWave = false;
@@ -33,11 +36,13 @@ public class GameManager : MonoBehaviour
     public int playerCoins = 0;
 
 
+
     private void Awake()
     {
         instance = this;
         nextWaveText.enabled = false;
         shopView.gameObject.SetActive(false);
+        gameOverText.gameObject.SetActive(false);
     }
 
     // Start is called before the first frame update
@@ -58,6 +63,7 @@ public class GameManager : MonoBehaviour
                 //make shop disappear
             }
         }
+
     }
 
     public void StartNextWave()
@@ -115,6 +121,35 @@ public class GameManager : MonoBehaviour
             playerCoins -= 5;
         }
         UpdateCoinText();
+    }
+
+    public void GameOver()
+    {
+        player.gameObject.SetActive(false);
+        gameOverText.gameObject.SetActive(true);
+        waveNumber = 0;
+        playerCoins = 0;
+
+    }
+
+    public void UpdatePlayerHealth(int health)
+    {
+        if (health == 3)
+        {
+            playerHealthText.text = "Health: <3 <3 <3";
+        }
+        else if (health == 2)
+        {
+            playerHealthText.text = "Health: <3 <3";
+        }
+        else if(health == 1)
+        {
+            playerHealthText.text = "Health: <3";
+        }
+        else
+        {
+            playerHealthText.text = "Health: ";
+        }
     }
 
 }
