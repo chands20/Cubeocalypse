@@ -26,6 +26,7 @@ public class Player : MonoBehaviour
     public int currentAmmo = 10;
     private bool isReloading = false;
     [SerializeField] AudioSource gunshotAudio; // gunshot
+    [SerializeField] AudioSource reloadAudio;
 
     public LineRenderer aimLineRenderer;
     public GameObject bulletTrailPrefab;
@@ -43,7 +44,7 @@ public class Player : MonoBehaviour
         animator = gameObject.GetComponent<Animator>();
         rb = gameObject.GetComponent<Rigidbody>();
         playerHealth = 3;
-        GameManager.instance.UpdatePlayerHealth(playerHealth);
+        GameManager.instance.UpdatePlayerHealthText(playerHealth);
 
         // Damage 
         if (playerRenderer == null)
@@ -66,7 +67,7 @@ public class Player : MonoBehaviour
         AimTracer();
         
         // Shooting
-        if (Input.GetMouseButton(0) && Time.time > nextFireTime && !isReloading && GameManager.instance.inBetweenWave == false) // Left mouse button
+        if (Input.GetMouseButton(0) && Time.time > nextFireTime && !isReloading && GameManager.instance.inBetweenWave == false && GameManager.instance.isMainMenuActive == false) // Left mouse button
         {
             nextFireTime = Time.time + fireRate;
             Shoot();
@@ -187,6 +188,8 @@ public class Player : MonoBehaviour
         Debug.Log("Reloading...");
         GameManager.instance.UpdateAmmoText(currentAmmo, totalAmmo, isReloading);
 
+        reloadAudio.Play(); // play sound effects
+
         yield return new WaitForSeconds(3f); // Wait for 3 seconds to simulate reload
 
         int maxMagazineSize = 10; // Assuming 10 is the max capacity
@@ -210,6 +213,12 @@ public class Player : MonoBehaviour
         GameManager.instance.UpdateAmmoText(currentAmmo,totalAmmo, isReloading);
     }
 
+    public void AddHealth()
+    {
+        playerHealth += 1;
+        GameManager.instance.UpdatePlayerHealthText(playerHealth);
+    }
+
     private void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.CompareTag("Zombie"))
@@ -226,7 +235,7 @@ public class Player : MonoBehaviour
     private void TakeDamage(int damageAmount)
     {
         playerHealth -= damageAmount;
-        GameManager.instance.UpdatePlayerHealth(playerHealth);
+        GameManager.instance.UpdatePlayerHealthText(playerHealth);
         StartCoroutine(FlashRed());
 
         if (playerHealth <= 0)

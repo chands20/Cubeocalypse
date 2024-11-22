@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 
@@ -24,16 +25,31 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject shopView;
     [SerializeField] UnityEngine.UI.Button buyAmmoButton;
     [SerializeField] UnityEngine.UI.Button buyHealthButton;
+    [SerializeField] TextMeshProUGUI buyHealthButtonText;
     public int waveNumber = 0;
 
+
+    // Spawner
     public int zombiesToSpawn = 10;
     public bool inBetweenWave = false;
 
     public Spawner spawner;
+
+    //Player
     public Player player;
+    public bool gameOver = false;
 
     //Coins
     public int playerCoins = 0;
+
+
+    // Main Menu
+    [SerializeField] GameObject mainMenu;
+    public bool isMainMenuActive;
+
+    // High Score
+    [SerializeField] TextMeshProUGUI highScoreText;
+    private int highScore = 0;
 
 
 
@@ -43,6 +59,13 @@ public class GameManager : MonoBehaviour
         nextWaveText.enabled = false;
         shopView.gameObject.SetActive(false);
         gameOverText.gameObject.SetActive(false);
+        highScore = PlayerPrefs.GetInt("HighScore", 0);
+        if (highScoreText != null)
+        {
+            highScoreText.text = "High Score: " + highScore + " Waves";
+        }
+        isMainMenuActive = true;
+        Time.timeScale = 0;
     }
 
     // Start is called before the first frame update
@@ -62,6 +85,22 @@ public class GameManager : MonoBehaviour
                 nextWaveText.enabled = false;
                 //make shop disappear
             }
+        }
+
+        // pause game while main menu is active
+        if (isMainMenuActive)
+        {
+            Time.timeScale = 0;
+        }
+        else
+        {
+            Time.timeScale = 1;
+        }
+
+        // Start Game Over
+        if (Input.GetButtonDown("Submit") && gameOver)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
     }
@@ -123,16 +162,30 @@ public class GameManager : MonoBehaviour
         UpdateCoinText();
     }
 
+    public void BuyHealth()
+    {
+        if(playerCoins >= 10 && player.playerHealth != 3)
+        {
+            player.AddHealth();
+            playerCoins -= 10;
+        }
+        UpdateCoinText();
+    }
+
     public void GameOver()
     {
+        if (waveNumber > highScore)
+        {
+            highScore = waveNumber;
+            PlayerPrefs.SetInt("HighScore", highScore); // Save the high score into memory
+        }
         player.gameObject.SetActive(false);
         gameOverText.gameObject.SetActive(true);
-        waveNumber = 0;
-        playerCoins = 0;
+        gameOver = true;
 
     }
 
-    public void UpdatePlayerHealth(int health)
+    public void UpdatePlayerHealthText(int health)
     {
         if (health == 3)
         {
@@ -150,6 +203,12 @@ public class GameManager : MonoBehaviour
         {
             playerHealthText.text = "Health: ";
         }
+    }
+
+    public void StartGame()
+    {
+        isMainMenuActive = false;
+        mainMenu.gameObject.SetActive(false);
     }
 
 }
